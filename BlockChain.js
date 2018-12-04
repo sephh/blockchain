@@ -29,38 +29,51 @@ class Blockchain {
 
 	// Get block height, it is auxiliar method that return the height of the blockchain
 	getBlockHeight() {
-		// Add your code here
+		return this.bd.getBlocksCount()
+			.then(count => count - 1);
 	}
 
 	// Add new block
-	addBlock(newBlock) {
-		if (this.chain.length > 0) {
-			newBlock.previousBlockHash = this.chain[this.chain.length - 1].hash;
+	async addBlock(newBlock) {
+		const self = this;
+		const height = await this.getBlockHeight();
+
+		if (height > -1) {
+			const previousBlock = await this.getBlock(height);
+			newBlock.previousBlockHash = previousBlock.hash;
 		}
 
-		newBlock.height = this.chain.length;
+		newBlock.height = height + 1;
 		newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
-		this.chain.push(newBlock);
 
-		return this.bd.addLevelDBData(newBlock.height, JSON.stringify(newBlock).toString()).then((result) => {
-			if (!result) {
-				console.log('Error Adding data');
-			} else {
-				console.log(result);
-			}
-		}).catch((err) => {
-			console.log(err);
-		});
+		return this.bd.addLevelDBData(newBlock.height, JSON.stringify(newBlock).toString())
+			.then((result) => {
+				if (!result) {
+					console.log('Error Adding data');
+				} else {
+					self.chain.push(newBlock);
+					console.log(result);
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 
 	// Get Block By Height
 	getBlock(height) {
-		// Add your code here
+		return this.bd.getLevelDBData(height);
 	}
 
 	// Validate if Block is being tampered by Block Height
 	validateBlock(height) {
-		// Add your code here
+		return this.bd.getLevelDBData(height)
+			.then((block) => {
+				return !block; // the block is only valid if the height is unique
+			})
+			.catch((err) => {
+				return err;
+			})
 	}
 
 	// Validate Blockchain

@@ -17,8 +17,7 @@ class LevelSandbox {
 		return new Promise(function (resolve, reject) {
 			self.db.get(key, function (err, value) {
 				if (err) {
-					console.error(err);
-					reject(err);
+					console.log('Record not found', err);
 				}
 
 				resolve(value);
@@ -29,15 +28,22 @@ class LevelSandbox {
 	// Add data to levelDB with key and value (Promise)
 	addLevelDBData(key, value) {
 		let self = this;
-		return new Promise(function (resolve, reject) {
-			self.db.put(key, value, function (err) {
-				if (err) {
-					console.log('Block ' + key + ' submission failed', err);
-					reject(err);
-				}
-				resolve(value);
+		return this.getLevelDBData(key)
+			.then((block) => {
+				return new Promise(function (resolve, reject) {
+					if (block) {
+						reject('Block already exists');
+					}
+
+					self.db.put(key, value, function (err) {
+						if (err) {
+							console.log('Block ' + key + ' submission failed', err);
+							reject(err);
+						}
+						resolve(value);
+					});
+				})
 			});
-		});
 	}
 
 	// Method that return the height

@@ -17,8 +17,9 @@ setTimeout(function () {
 
 
 (function theLoop(i) {
-	setTimeout(function () {
-		let blockTest = new Block('Test Block - ' + (i + 1));
+	setTimeout(async function () {
+		const height = await myBlockChain.getBlockHeight();
+		let blockTest = new Block('Test Block - ' + (height + 1));
 		// Be careful this only will work if your method 'addBlock' in the Blockchain.js file return a Promise
 		myBlockChain.addBlock(blockTest).then(() => {
 			i++;
