@@ -10,7 +10,6 @@ class Blockchain {
 
 	constructor() {
 		this.bd = new LevelSandbox();
-		this.chain = [];
 		this.generateGenesisBlock();
 	}
 
