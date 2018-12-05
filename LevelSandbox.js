@@ -16,9 +16,9 @@ class LevelSandbox {
 		let self = this;
 		return new Promise(function (resolve, reject) {
 			self.db.get(key, function (err, value) {
-				if (err) {
-					console.log('Record not found', err);
-				}
+				// if (err) {
+				// 	console.log('Record not found', err);
+				// }
 
 				resolve(value);
 			})
